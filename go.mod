@@ -1,12 +1,12 @@
 module github.com/mer-oscar/conduit-connector-azure-event-hub
 
-go 1.21
-toolchain go1.22.2
+go 1.22.6
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.11.1
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.5.2
 	github.com/Azure/azure-sdk-for-go/sdk/messaging/azeventhubs v1.2.1
+	github.com/conduitio/conduit-commons v0.2.0
 	github.com/conduitio/conduit-connector-sdk v0.9.1
 	github.com/golangci/golangci-lint v1.58.0
 	github.com/matryer/is v1.4.1
@@ -52,7 +52,6 @@ require (
 	github.com/charithe/durationcheck v0.0.10 // indirect
 	github.com/chavacava/garif v0.1.0 // indirect
 	github.com/ckaznocha/intrange v0.1.2 // indirect
-	github.com/conduitio/conduit-commons v0.2.0 // indirect
 	github.com/conduitio/conduit-connector-protocol v0.6.0 // indirect
 	github.com/curioswitch/go-reassign v0.2.0 // indirect
 	github.com/daixiang0/gci v0.13.4 // indirect
