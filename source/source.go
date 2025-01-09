@@ -9,6 +9,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/messaging/azeventhubs"
+	"github.com/conduitio/conduit-commons/config"
+	"github.com/conduitio/conduit-commons/opencdc"
 	sdk "github.com/conduitio/conduit-connector-sdk"
 )
 
@@ -19,7 +21,7 @@ type Source struct {
 	client                    *azeventhubs.ConsumerClient
 	processor                 *azeventhubs.Processor
 	partitionReadErrorChannel chan error
-	readBuffer                chan sdk.Record
+	readBuffer                chan opencdc.Record
 	partitionClients          []*azeventhubs.PartitionClient
 	dispatched                bool
 }
@@ -27,24 +29,24 @@ type Source struct {
 func New() sdk.Source {
 	return sdk.SourceWithMiddleware(&Source{
 		partitionReadErrorChannel: make(chan error, 1),
-		readBuffer:                make(chan sdk.Record, 10000),
+		readBuffer:                make(chan opencdc.Record, 10000),
 	}, sdk.DefaultSourceMiddleware()...)
 }
 
-func (s *Source) Parameters() map[string]sdk.Parameter {
+func (s *Source) Parameters() config.Parameters {
 	return Config{}.Parameters()
 }
 
-func (s *Source) Configure(ctx context.Context, cfg map[string]string) error {
+func (s *Source) Configure(ctx context.Context, cfg config.Config) error {
 	sdk.Logger(ctx).Info().Msg("Configuring Source...")
-	err := sdk.Util.ParseConfig(cfg, &s.config)
+	err := sdk.Util.ParseConfig(ctx, cfg, &s.config, New().Parameters())
 	if err != nil {
 		return fmt.Errorf("invalid config: %w", err)
 	}
 	return nil
 }
 
-func (s *Source) Open(ctx context.Context, pos sdk.Position) error {
+func (s *Source) Open(ctx context.Context, pos opencdc.Position) error {
 	defaultAzureCred, err := azidentity.NewClientSecretCredential(s.config.AzureTenantID, s.config.AzureClientID, s.config.AzureClientSecret, nil)
 	if err != nil {
 		return err
@@ -84,7 +86,7 @@ func (s *Source) Open(ctx context.Context, pos sdk.Position) error {
 	return nil
 }
 
-func (s *Source) Read(ctx context.Context) (sdk.Record, error) {
+func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
 	if !s.dispatched {
 		go s.dispatchPartitionClients(ctx)
 	}
@@ -92,17 +94,17 @@ func (s *Source) Read(ctx context.Context) (sdk.Record, error) {
 	select {
 	case err := <-s.partitionReadErrorChannel:
 		if err != nil {
-			return sdk.Record{}, err
+			return opencdc.Record{}, err
 		}
-		return sdk.Record{}, ctx.Err()
+		return opencdc.Record{}, ctx.Err()
 	case rec := <-s.readBuffer:
 		return rec, nil
 	case <-ctx.Done():
-		return sdk.Record{}, ctx.Err()
+		return opencdc.Record{}, ctx.Err()
 	}
 }
 
-func (s *Source) Ack(ctx context.Context, position sdk.Position) error {
+func (s *Source) Ack(ctx context.Context, position opencdc.Position) error {
 	return nil
 }
 
@@ -149,10 +151,10 @@ func (s *Source) dispatchPartitionClients(ctx context.Context) {
 				}
 
 				rec := sdk.Util.Source.NewRecordCreate(
-					sdk.Position(position),
+					opencdc.Position(position),
 					nil,
-					sdk.RawData(*event.MessageID),
-					sdk.RawData(event.Body))
+					opencdc.RawData(*event.MessageID),
+					opencdc.RawData(event.Body))
 
 				s.readBuffer <- rec
 			}
