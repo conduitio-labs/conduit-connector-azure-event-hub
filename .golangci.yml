@@ -1,16 +1,29 @@
+run:
+  timeout: 5m
+
 linters-settings:
-  gofmt:
-    simplify: false
-  govet:
-    check-shadowing: false
   nolintlint:
     allow-unused: false # report any unused nolint directives
     require-explanation: true # require an explanation for nolint directives
-    require-specific: true # require nolint directives to mention the specific linter being suppressed
-  gocyclo:
-    min-complexity: 20
-  goconst:
+    require-specific: true # require nolint directives to mention the specific linter being suppressedgoconst:
     ignore-tests: true
+  wrapcheck:
+    ignoreSigs:
+      - .Errorf(
+      - errors.New(
+      - errors.Unwrap(
+      - errors.Join(
+      - .Wrap(
+      - .Wrapf(
+      - .WithMessage(
+      - .WithMessagef(
+      - .WithStack(
+      - (context.Context).Err()
+  goheader:
+    template-path: './.golangci.goheader.template'
+    values:
+      regexp:
+        copyright-year: 20[2-9]\d
 
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
@@ -23,25 +36,25 @@ linters:
     - durationcheck
     - errcheck
     - errname
-    # - errorlint
-    # - exhaustive
+    - errorlint
+    - exhaustive
     # - exhaustivestruct
-    - exportloopref
+    - copyloopvar
     # - forbidigo
-    # - forcetypeassert
-    # - funlen
-    # - gochecknoinits
+    - forcetypeassert
+    - funlen
+    - gochecknoinits
     - goconst
     - gocritic
     - gocyclo
     # - cyclop # not interested in package complexities at the moment
-    # - godot
+    - godot
     - gofmt
-    # - gofumpt
+    - gofumpt
     - goheader
     - goimports
     # - revive # lots of unused parameters in the template, would be helpful for the user to keep them
-    # - gomnd
+    - mnd
     - gomoddirectives
     - gomodguard
     - goprintffuncname
@@ -50,31 +63,31 @@ linters:
     - govet
     # - ifshort
     - ineffassign
-    # - importas
+    - importas
     # - lll
-    # - misspell
+    - misspell
     - makezero
-    # - nakedret
-    # - nilerr
+    - nakedret
+    - nilerr
     # - nilnil
     # - nlreturn
     - noctx
     - nolintlint
     # - paralleltest
     - predeclared
-    # - rowserrcheck
+    - rowserrcheck
     - staticcheck
     - stylecheck
-    # - sqlclosecheck
+    - sqlclosecheck
     # - tagliatelle
-    # - tenv
-    # - thelper
-    # - tparallel
+    - tenv
+    - thelper
+    - tparallel
     - typecheck
     - unconvert
-    # - unparam
-    - unused
-    # - wastedassign
+    - unparam
+    # - unused  # lots of unused structs and methods
+    - wastedassign
     - whitespace
     # - wrapcheck
     # - wsl
