@@ -38,7 +38,6 @@ type Source struct {
 
 	config                    Config
 	client                    *azeventhubs.ConsumerClient
-	processor                 *azeventhubs.Processor
 	partitionReadErrorChannel chan error
 	readBuffer                chan opencdc.Record
 	partitionClients          []*azeventhubs.PartitionClient

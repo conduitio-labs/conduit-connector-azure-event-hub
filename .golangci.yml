@@ -86,7 +86,7 @@ linters:
     - typecheck
     - unconvert
     - unparam
-    # - unused  # lots of unused structs and methods
+    - unused
     - wastedassign
     - whitespace
     # - wrapcheck
