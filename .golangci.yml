@@ -6,7 +6,6 @@ linters-settings:
     allow-unused: false # report any unused nolint directives
     require-explanation: true # require an explanation for nolint directives
     require-specific: true # require nolint directives to mention the specific linter being suppressedgoconst:
-    ignore-tests: true
   wrapcheck:
     ignoreSigs:
       - .Errorf(
@@ -80,12 +79,13 @@ linters:
     - stylecheck
     - sqlclosecheck
     # - tagliatelle
-    - tenv
+    # - tenv
     - thelper
     - tparallel
     - typecheck
     - unconvert
     - unparam
+    - usetesting
     - unused
     - wastedassign
     - whitespace
